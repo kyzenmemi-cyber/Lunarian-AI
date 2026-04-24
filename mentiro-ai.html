@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentiro AI — Your Multilingual Study Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0f1a;
+    --ink-soft: #3a3d52;
+    --ink-muted: #7a7e96;
+    --sky: #3b82f6;
+    --sky-deep: #1d4ed8;
+    --sky-pale: #eff6ff;
+    --violet: #7c3aed;
+    --violet-pale: #f5f3ff;
+    --aurora: linear-gradient(135deg, #3b82f6 0%, #7c3aed 100%);
+    --aurora-soft: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%);
+    --white: #ffffff;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.04);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,.10), 0 4px 12px rgba(0,0,0,.06);
+    --shadow-glow: 0 0 40px rgba(59,130,246,.18);
+    --radius: 16px;
+    --radius-lg: 24px;
+    --radius-pill: 999px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    background: var(--white);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  h1,h2,h3,h4,h5 { font-family: 'Sora', sans-serif; line-height: 1.2; }
+
+  img { max-width: 100%; display: block; }
+  a { text-decoration: none; color: inherit; }
+  ul { list-style: none; }
+
+  /* ── UTILITIES ── */
+  .container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+  .section { padding: 96px 0; }
+  .section--alt { background: var(--gray-50); }
+  .tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'Sora', sans-serif; font-size: .72rem; font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase;
+    padding: 5px 14px; border-radius: var(--radius-pill);
+    background: var(--aurora-soft);
+    color: var(--violet); margin-bottom: 18px;
+  }
+  .section-title {
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 800; color: var(--ink); margin-bottom: 16px;
+  }
+  .section-sub {
+    font-size: 1.05rem; color: var(--ink-soft);
+    max-width: 560px; margin: 0 auto 56px;
+  }
+  .text-center { text-align: center; }
+  .gradient-text {
+    background: var(--aurora); -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Sora', sans-serif; font-weight: 600; font-size: .9rem;
+    padding: 13px 26px; border-radius: var(--radius-pill);
+    cursor: pointer; border: none; transition: all .22s ease;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--aurora); color: #fff;
+    box-shadow: 0 4px 20px rgba(59,130,246,.35);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(59,130,246,.45); }
+  .btn-outline {
+    background: transparent; color: var(--sky);
+    border: 2px solid var(--sky);
+  }
+  .btn-outline:hover { background: var(--sky-pale); }
+  .btn-ghost {
+    background: rgba(255,255,255,.15); color: #fff;
+    backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.25);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,.25); }
+  .btn-white {
+    background: #fff; color: var(--sky-deep);
+    box-shadow: var(--shadow-md);
+  }
+  .btn-white:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    padding: 0 24px;
+    background: rgba(255,255,255,.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(0,0,0,.06);
+    transition: all .3s;
+  }
+  .nav-inner {
+    max-width: 1160px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 68px;
+  }
+  .nav-logo {
+    font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.35rem;
+    background: var(--aurora); -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .nav-links {
+    display: flex; align-items: center; gap: 32px;
+  }
+  .nav-links a {
+    font-size: .9rem; font-weight: 500; color: var(--ink-soft);
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--sky); }
+  .nav-cta { display: flex; align-items: center; gap: 12px; }
+  .nav-hamburger {
+    display: none; flex-direction: column; gap: 5px;
+    cursor: pointer; padding: 4px;
+  }
+  .nav-hamburger span {
+    display: block; width: 24px; height: 2px;
+    background: var(--ink); border-radius: 2px; transition: all .3s;
+  }
+
+  /* ── HERO ── */
+  #home {
+    min-height: 100vh;
+    background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 50%, #0d1529 100%);
+    display: flex; align-items: center;
+    padding-top: 68px;
+    position: relative; overflow: hidden;
+  }
+  .hero-orbs {
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+  }
+  .orb {
+    position: absolute; border-radius: 50%;
+    filter: blur(80px); opacity: .35;
+  }
+  .orb-1 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, #3b82f6, transparent);
+    top: -100px; right: -100px;
+    animation: drift1 8s ease-in-out infinite alternate;
+  }
+  .orb-2 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #7c3aed, transparent);
+    bottom: -100px; left: -100px;
+    animation: drift2 10s ease-in-out infinite alternate;
+  }
+  .orb-3 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, #06b6d4, transparent);
+    top: 40%; left: 40%;
+    animation: drift3 6s ease-in-out infinite alternate;
+  }
+  @keyframes drift1 { to { transform: translate(40px, 30px); } }
+  @keyframes drift2 { to { transform: translate(-30px, -40px); } }
+  @keyframes drift3 { to { transform: translate(20px, -20px); } }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 64px; align-items: center;
+    padding: 80px 0 96px;
+  }
+  .hero-left {}
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    padding: 6px 16px 6px 8px; border-radius: var(--radius-pill);
+    margin-bottom: 28px; backdrop-filter: blur(8px);
+  }
+  .hero-badge-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 10px #34d399;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; } 50% { opacity: .4; }
+  }
+  .hero-badge span {
+    font-size: .78rem; font-weight: 600; color: rgba(255,255,255,.8);
+    letter-spacing: .04em;
+  }
+  .hero-h1 {
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    font-weight: 800; color: #fff; margin-bottom: 22px;
+    line-height: 1.15;
+  }
+  .hero-h1 em {
+    font-style: normal;
+    background: linear-gradient(90deg, #60a5fa, #a78bfa, #34d399);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-p {
+    font-size: 1.1rem; color: rgba(255,255,255,.65);
+    max-width: 460px; margin-bottom: 36px; line-height: 1.75;
+  }
+  .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero-stats {
+    display: flex; gap: 32px; margin-top: 48px;
+    flex-wrap: wrap;
+  }
+  .hero-stat {}
+  .hero-stat-num {
+    font-family: 'Sora', sans-serif; font-size: 1.6rem;
+    font-weight: 800; color: #fff;
+  }
+  .hero-stat-label {
+    font-size: .8rem; color: rgba(255,255,255,.5);
+    letter-spacing: .04em;
+  }
+  .hero-divider {
+    width: 1px; background: rgba(255,255,255,.1); align-self: stretch;
+  }
+
+  /* ── CHAT CARD HERO ── */
+  .hero-right { display: flex; justify-content: center; }
+  .chat-demo-card {
+    background: rgba(255,255,255,.06);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: var(--radius-lg);
+    width: 100%; max-width: 420px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,.4), var(--shadow-glow);
+    animation: float 5s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  .chat-card-header {
+    padding: 16px 20px;
+    background: rgba(255,255,255,.05);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .chat-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--aurora);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+  }
+  .chat-name { font-family: 'Sora',sans-serif; font-weight: 700; color: #fff; font-size: .9rem; }
+  .chat-status { font-size: .75rem; color: #34d399; display: flex; align-items: center; gap: 5px; }
+  .chat-status::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: #34d399; display: block;
+  }
+  .chat-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .chat-msg {
+    max-width: 88%;
+    padding: 11px 15px;
+    border-radius: 14px;
+    font-size: .85rem; line-height: 1.55;
+  }
+  .chat-msg.user {
+    align-self: flex-end;
+    background: var(--aurora);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .chat-msg.ai {
+    align-self: flex-start;
+    background: rgba(255,255,255,.1);
+    color: rgba(255,255,255,.9);
+    border-bottom-left-radius: 4px;
+    border: 1px solid rgba(255,255,255,.08);
+  }
+  .chat-msg.ai .msg-label {
+    font-family: 'Sora',sans-serif; font-size: .68rem;
+    color: #a78bfa; font-weight: 600; margin-bottom: 5px;
+    letter-spacing: .04em;
+  }
+  .chat-lang-pills {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;
+  }
+  .lang-pill {
+    background: rgba(255,255,255,.12); border-radius: var(--radius-pill);
+    padding: 3px 10px; font-size: .72rem; color: rgba(255,255,255,.7);
+  }
+  .chat-input-bar {
+    padding: 14px 20px;
+    border-top: 1px solid rgba(255,255,255,.08);
+    display: flex; gap: 10px; align-items: center;
+  }
+  .chat-input-fake {
+    flex: 1; background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: var(--radius-pill); padding: 9px 16px;
+    font-size: .82rem; color: rgba(255,255,255,.4);
+  }
+  .chat-send-btn {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--aurora); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .2s;
+    flex-shrink: 0;
+  }
+  .chat-send-btn:hover { transform: scale(1.1); }
+  .chat-send-btn svg { width: 16px; height: 16px; }
+
+  /* ── MARQUEE LOGOS ── */
+  .marquee-section {
+    padding: 32px 0; background: var(--white);
+    border-bottom: 1px solid var(--gray-100);
+    overflow: hidden;
+  }
+  .marquee-label {
+    text-align: center; font-size: .78rem; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ink-muted); margin-bottom: 20px;
+  }
+  .marquee-track { display: flex; gap: 48px; width: max-content; animation: marquee 22s linear infinite; }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+  .marquee-item {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Sora',sans-serif; font-size: .85rem;
+    font-weight: 600; color: var(--ink-muted); white-space: nowrap;
+  }
+  .marquee-item .emoji { font-size: 1.1rem; }
+
+  /* ── FEATURES ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .feature-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 32px 28px;
+    transition: all .25s ease;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--aurora-soft);
+    opacity: 0; transition: opacity .25s;
+    border-radius: var(--radius-lg);
+  }
+  .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: transparent; }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-card > * { position: relative; z-index: 1; }
+  .feature-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; margin-bottom: 18px;
+    background: var(--aurora-soft);
+  }
+  .feature-h { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; color: var(--ink); }
+  .feature-p { font-size: .88rem; color: var(--ink-soft); line-height: 1.65; }
+
+  /* ── HOW IT WORKS ── */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 64px; }
+  .step { text-align: center; padding: 0 12px; }
+  .step-num {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--aurora); color: #fff;
+    font-family: 'Sora',sans-serif; font-weight: 800; font-size: 1.2rem;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 24px rgba(59,130,246,.35);
+  }
+  .step-h { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; }
+  .step-p { font-size: .88rem; color: var(--ink-soft); line-height: 1.65; }
+  .step-connector { display: none; }
+
+  /* ── CHAT DEMO ── */
+  #chat-demo {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    padding: 96px 0;
+  }
+  .chat-demo-layout {
+    display: grid; grid-template-columns: 1fr 1.4fr; gap: 64px; align-items: center;
+  }
+  .demo-copy {}
+  .demo-copy .section-title { color: #fff; }
+  .demo-copy .section-sub { color: rgba(255,255,255,.6); margin: 0 0 32px; }
+  .demo-features-list { display: flex; flex-direction: column; gap: 14px; }
+  .demo-feature {
+    display: flex; align-items: center; gap: 12px;
+    color: rgba(255,255,255,.8); font-size: .9rem;
+  }
+  .demo-feature-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--aurora); flex-shrink: 0;
+  }
+  .demo-chat-widget {
+    background: rgba(255,255,255,.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0,0,0,.4);
+  }
+  .demo-chat-header {
+    padding: 16px 20px;
+    background: var(--aurora);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .demo-chat-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+  }
+  .demo-chat-info .name { font-family: 'Sora',sans-serif; font-weight: 700; color: #fff; font-size: .9rem; }
+  .demo-chat-info .status { font-size: .75rem; color: rgba(255,255,255,.7); }
+  .demo-chat-body { padding: 20px; min-height: 320px; display: flex; flex-direction: column; gap: 16px; }
+  .demo-msg { max-width: 85%; }
+  .demo-msg.user { align-self: flex-end; }
+  .demo-msg.ai { align-self: flex-start; }
+  .demo-msg-bubble {
+    padding: 11px 15px; border-radius: 14px; font-size: .85rem; line-height: 1.6;
+  }
+  .demo-msg.user .demo-msg-bubble {
+    background: var(--aurora); color: #fff; border-bottom-right-radius: 4px;
+  }
+  .demo-msg.ai .demo-msg-bubble {
+    background: rgba(255,255,255,.1); color: rgba(255,255,255,.9);
+    border: 1px solid rgba(255,255,255,.1); border-bottom-left-radius: 4px;
+  }
+  .demo-typing {
+    align-self: flex-start;
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1);
+    border-radius: 14px; border-bottom-left-radius: 4px;
+    padding: 12px 16px; display: flex; gap: 5px; align-items: center;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.5); }
+  .dot:nth-child(1) { animation: blink .9s .0s infinite; }
+  .dot:nth-child(2) { animation: blink .9s .2s infinite; }
+  .dot:nth-child(3) { animation: blink .9s .4s infinite; }
+  @keyframes blink { 0%,100%{opacity:.3} 50%{opacity:1} }
+  .demo-input-row {
+    padding: 14px 20px; border-top: 1px solid rgba(255,255,255,.08);
+    display: flex; gap: 10px;
+  }
+  .demo-input {
+    flex: 1; background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15); border-radius: var(--radius-pill);
+    padding: 10px 16px; font-size: .85rem; color: #fff;
+    font-family: 'DM Sans',sans-serif; outline: none;
+    transition: border-color .2s;
+  }
+  .demo-input::placeholder { color: rgba(255,255,255,.35); }
+  .demo-input:focus { border-color: rgba(255,255,255,.4); }
+  .demo-send {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--aurora); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .2s; flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(59,130,246,.4);
+  }
+  .demo-send:hover { transform: scale(1.08); }
+  .demo-send svg { width: 18px; height: 18px; fill: white; }
+  .demo-subject-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .subject-tag {
+    font-size: .75rem; padding: 4px 12px; border-radius: var(--radius-pill);
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
+    color: rgba(255,255,255,.6); cursor: pointer; transition: all .2s;
+  }
+  .subject-tag:hover { background: rgba(255,255,255,.15); color: #fff; }
+
+  /* ── PRICING ── */
+  .pricing-grid {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 24px;
+    align-items: start; margin-top: 16px;
+  }
+  .plan-card {
+    background: var(--white); border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-lg); padding: 36px 32px;
+    transition: all .25s; position: relative; overflow: hidden;
+  }
+  .plan-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+  .plan-card.featured {
+    background: linear-gradient(135deg, #0f172a, #1e1b4b);
+    border-color: transparent;
+    box-shadow: var(--shadow-lg), 0 0 0 1px rgba(124,58,237,.4);
+  }
+  .plan-badge {
+    position: absolute; top: 22px; right: 22px;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: #fff; font-family: 'Sora',sans-serif; font-size: .7rem;
+    font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    padding: 4px 12px; border-radius: var(--radius-pill);
+  }
+  .plan-name {
+    font-family: 'Sora',sans-serif; font-size: .8rem; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .plan-card:not(.featured) .plan-name { color: var(--sky); }
+  .plan-card.featured .plan-name { color: #a78bfa; }
+  .plan-price {
+    font-family: 'Sora',sans-serif; font-size: 3rem;
+    font-weight: 800; line-height: 1;
+    margin-bottom: 6px;
+  }
+  .plan-card:not(.featured) .plan-price { color: var(--ink); }
+  .plan-card.featured .plan-price { color: #fff; }
+  .plan-price sup { font-size: 1.4rem; vertical-align: super; }
+  .plan-price sub { font-size: .9rem; font-weight: 400; opacity: .6; }
+  .plan-desc {
+    font-size: .85rem; margin-bottom: 28px; line-height: 1.5;
+  }
+  .plan-card:not(.featured) .plan-desc { color: var(--ink-soft); }
+  .plan-card.featured .plan-desc { color: rgba(255,255,255,.6); }
+  .plan-divider {
+    border: none; border-top: 1px solid;
+    margin-bottom: 24px;
+  }
+  .plan-card:not(.featured) .plan-divider { border-color: var(--gray-200); }
+  .plan-card.featured .plan-divider { border-color: rgba(255,255,255,.12); }
+  .plan-features { display: flex; flex-direction: column; gap: 11px; margin-bottom: 32px; }
+  .plan-feat {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: .875rem;
+  }
+  .plan-card:not(.featured) .plan-feat { color: var(--ink-soft); }
+  .plan-card.featured .plan-feat { color: rgba(255,255,255,.75); }
+  .plan-feat-icon {
+    width: 18px; height: 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px; font-size: .65rem;
+  }
+  .plan-feat-icon.yes { background: #d1fae5; color: #065f46; }
+  .plan-feat-icon.limited { background: #fef3c7; color: #92400e; }
+  .plan-card.featured .plan-feat-icon.yes { background: rgba(167,243,208,.2); color: #6ee7b7; }
+  .btn-plan-free { background: var(--gray-100); color: var(--ink); border: none; }
+  .btn-plan-free:hover { background: var(--gray-200); }
+  .btn-plan-smart { background: var(--aurora); color: #fff; box-shadow: 0 4px 20px rgba(59,130,246,.3); }
+  .btn-plan-smart:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(59,130,246,.45); }
+  .btn-plan-genius {
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    color: #fff; box-shadow: 0 4px 20px rgba(124,58,237,.4);
+  }
+  .btn-plan-genius:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(124,58,237,.55); }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+  .testi-card {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg); padding: 28px;
+    transition: all .25s;
+  }
+  .testi-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+  .testi-stars { color: #f59e0b; font-size: .9rem; margin-bottom: 14px; }
+  .testi-text { font-size: .9rem; color: var(--ink-soft); line-height: 1.7; margin-bottom: 20px; font-style: italic; }
+  .testi-author { display: flex; align-items: center; gap: 12px; }
+  .testi-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; background: var(--aurora-soft);
+  }
+  .testi-name { font-family: 'Sora',sans-serif; font-weight: 700; font-size: .88rem; }
+  .testi-role { font-size: .78rem; color: var(--ink-muted); }
+
+  /* ── FAQ ── */
+  .faq-list { max-width: 760px; margin: 0 auto; }
+  .faq-item {
+    border: 1px solid var(--gray-200); border-radius: var(--radius);
+    margin-bottom: 12px; overflow: hidden;
+    transition: box-shadow .2s;
+  }
+  .faq-item:hover { box-shadow: var(--shadow-md); }
+  .faq-q {
+    width: 100%; background: none; border: none; padding: 20px 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    text-align: left; cursor: pointer;
+    font-family: 'Sora',sans-serif; font-size: .95rem; font-weight: 600;
+    color: var(--ink);
+  }
+  .faq-q .chevron {
+    transition: transform .3s; flex-shrink: 0;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--aurora-soft); color: var(--violet);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .75rem;
+  }
+  .faq-item.open .faq-q .chevron { transform: rotate(180deg); }
+  .faq-a {
+    padding: 0 24px; max-height: 0; overflow: hidden;
+    transition: max-height .35s ease, padding .35s ease;
+    font-size: .9rem; color: var(--ink-soft); line-height: 1.7;
+  }
+  .faq-item.open .faq-a { max-height: 200px; padding: 0 24px 20px; }
+
+  /* ── CONTACT ── */
+  .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+  .contact-copy .section-title { text-align: left; }
+  .contact-copy .section-sub { margin: 0 0 32px; text-align: left; }
+  .contact-methods { display: flex; flex-direction: column; gap: 20px; }
+  .contact-method { display: flex; align-items: flex-start; gap: 14px; }
+  .contact-method-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: var(--aurora-soft);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+  }
+  .contact-method-title { font-family: 'Sora',sans-serif; font-weight: 700; font-size: .9rem; margin-bottom: 3px; }
+  .contact-method-val { font-size: .85rem; color: var(--sky); }
+  .contact-form { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 36px; box-shadow: var(--shadow-md); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: .82rem; font-weight: 600; color: var(--ink); margin-bottom: 7px; }
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%; padding: 11px 16px;
+    border: 1.5px solid var(--gray-200); border-radius: 10px;
+    font-family: 'DM Sans',sans-serif; font-size: .88rem; color: var(--ink);
+    background: var(--gray-50); outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    border-color: var(--sky); box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+  }
+  .form-group textarea { resize: vertical; min-height: 110px; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #0d0f1a; padding: 64px 0 32px;
+  }
+  .footer-inner { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+  .footer-brand {}
+  .footer-logo { font-family: 'Sora',sans-serif; font-weight: 800; font-size: 1.4rem; background: var(--aurora); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 14px; }
+  .footer-tagline { font-size: .85rem; color: rgba(255,255,255,.45); line-height: 1.65; max-width: 260px; margin-bottom: 24px; }
+  .footer-social { display: flex; gap: 12px; }
+  .social-btn { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,.08); display: flex; align-items: center; justify-content: center; font-size: .9rem; color: rgba(255,255,255,.6); transition: all .2s; }
+  .social-btn:hover { background: var(--aurora); color: #fff; }
+  .footer-col-title { font-family: 'Sora',sans-serif; font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 18px; }
+  .footer-col ul { display: flex; flex-direction: column; gap: 10px; }
+  .footer-col ul li a { font-size: .85rem; color: rgba(255,255,255,.55); transition: color .2s; }
+  .footer-col ul li a:hover { color: rgba(255,255,255,.9); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,.06); padding-top: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: gap; gap: 16px; }
+  .footer-copy { font-size: .8rem; color: rgba(255,255,255,.3); }
+  .footer-legal { display: flex; gap: 20px; }
+  .footer-legal a { font-size: .8rem; color: rgba(255,255,255,.35); transition: color .2s; }
+  .footer-legal a:hover { color: rgba(255,255,255,.7); }
+
+  /* ── LANGUAGE BANNER ── */
+  .lang-banner {
+    background: var(--aurora-soft); border-bottom: 1px solid rgba(124,58,237,.12);
+    padding: 10px 0; text-align: center;
+  }
+  .lang-banner-inner { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  .lang-flag { font-size: .95rem; }
+  .lang-banner-text { font-size: .82rem; font-weight: 500; color: var(--violet); }
+
+  /* ── MOBILE ── */
+  @media(max-width:900px) {
+    .features-grid { grid-template-columns: repeat(2,1fr); }
+    .steps { grid-template-columns: 1fr; gap: 32px; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .contact-layout { grid-template-columns: 1fr; }
+    .footer-inner { grid-template-columns: 1fr 1fr; }
+    .chat-demo-layout { grid-template-columns: 1fr; }
+    .hero-content { grid-template-columns: 1fr; gap: 48px; padding: 60px 0 72px; }
+    .hero-right { display: none; }
+  }
+  @media(max-width:640px) {
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+    .section { padding: 64px 0; }
+    .features-grid { grid-template-columns: 1fr; }
+    .footer-inner { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .hero-stats { gap: 20px; }
+    .hero-stat-num { font-size: 1.3rem; }
+  }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal-delay-1 { transition-delay: .1s; }
+  .reveal-delay-2 { transition-delay: .2s; }
+  .reveal-delay-3 { transition-delay: .3s; }
+
+  /* ── MOBILE MENU ── */
+  .mobile-menu {
+    display: none; position: fixed;
+    top: 68px; left: 0; right: 0;
+    background: rgba(255,255,255,.97);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 20px 24px 28px;
+    z-index: 999; flex-direction: column; gap: 16px;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a { font-size: 1rem; font-weight: 500; color: var(--ink-soft); padding: 8px 0; border-bottom: 1px solid var(--gray-100); }
+  /* ── BILLING TOGGLE ── */
+  .billing-toggle {
+    display: inline-flex; align-items: center; gap: 12px;
+    margin: 0 auto 48px; flex-wrap: wrap; justify-content: center;
+  }
+  .billing-label {
+    font-family: 'Sora',sans-serif; font-size: .88rem; font-weight: 600;
+    color: var(--ink-muted); transition: color .2s; cursor: pointer;
+  }
+  .toggle-track {
+    width: 52px; height: 28px; border-radius: 14px;
+    background: var(--gray-200); position: relative; cursor: pointer;
+    transition: background .3s;
+  }
+  .toggle-track.on { background: var(--aurora); }
+  .toggle-thumb {
+    position: absolute; top: 4px; left: 4px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.2);
+    transition: transform .3s;
+  }
+  .toggle-track.on .toggle-thumb { transform: translateX(24px); }
+  .savings-pill {
+    background: linear-gradient(135deg,#d1fae5,#a7f3d0);
+    color: #065f46; font-family: 'Sora',sans-serif;
+    font-size: .72rem; font-weight: 700;
+    padding: 4px 12px; border-radius: var(--radius-pill);
+    letter-spacing: .04em;
+  }
+  .plan-yearly-note {
+    display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px;
+  }
+  .yearly-total { font-size: .82rem; color: var(--ink-soft); font-weight: 500; }
+  .yearly-save {
+    font-size: .75rem; color: #059669; font-weight: 700;
+    font-family: 'Sora',sans-serif;
+  }
+  .plan-limit-bar {
+    background: #fef3c7; border: 1px solid #fcd34d;
+    border-radius: 8px; padding: 7px 12px; margin-bottom: 16px;
+  }
+  .plan-limit-label { font-size: .8rem; color: #92400e; font-weight: 600; }
+  .price-cents { font-size: 1.6rem; }
+
+  /* ── AUTH MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(10,12,28,.75);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal-box {
+    background: var(--white); border-radius: var(--radius-lg);
+    width: 100%; max-width: 460px;
+    box-shadow: 0 32px 80px rgba(0,0,0,.3);
+    overflow: hidden;
+    transform: translateY(20px) scale(.97);
+    transition: transform .3s;
+  }
+  .modal-overlay.open .modal-box { transform: none; }
+  .modal-header {
+    background: linear-gradient(135deg,#0f172a,#1e1b4b);
+    padding: 32px 36px 28px; text-align: center; position: relative;
+  }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,255,255,.12); border: none;
+    color: rgba(255,255,255,.7); cursor: pointer; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+  }
+  .modal-close:hover { background: rgba(255,255,255,.22); }
+  .modal-logo {
+    font-family: 'Sora',sans-serif; font-weight: 800; font-size: 1.2rem;
+    background: linear-gradient(90deg,#60a5fa,#a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 6px;
+  }
+  .modal-title {
+    font-family: 'Sora',sans-serif; font-weight: 800; font-size: 1.5rem;
+    color: #fff; margin-bottom: 6px;
+  }
+  .modal-sub { font-size: .85rem; color: rgba(255,255,255,.55); }
+  .modal-tabs {
+    display: flex; border-bottom: 1px solid var(--gray-200);
+  }
+  .modal-tab {
+    flex: 1; padding: 14px; text-align: center;
+    font-family: 'Sora',sans-serif; font-size: .88rem; font-weight: 600;
+    color: var(--ink-muted); cursor: pointer; border: none; background: none;
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+    transition: all .2s;
+  }
+  .modal-tab.active { color: var(--sky); border-bottom-color: var(--sky); }
+  .modal-body { padding: 28px 36px 32px; }
+  .modal-form { display: flex; flex-direction: column; gap: 16px; }
+  .mform-group { display: flex; flex-direction: column; gap: 6px; }
+  .mform-group label {
+    font-size: .8rem; font-weight: 600; color: var(--ink);
+  }
+  .mform-group input {
+    padding: 11px 16px; border: 1.5px solid var(--gray-200);
+    border-radius: 10px; font-family: 'DM Sans',sans-serif;
+    font-size: .9rem; color: var(--ink); background: var(--gray-50);
+    outline: none; transition: border-color .2s, box-shadow .2s;
+  }
+  .mform-group input:focus {
+    border-color: var(--sky); background: #fff;
+    box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+  }
+  .mform-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .modal-submit {
+    width: 100%; padding: 13px; border-radius: 12px;
+    font-family: 'Sora',sans-serif; font-weight: 700; font-size: .95rem;
+    border: none; cursor: pointer;
+    background: var(--aurora); color: #fff;
+    box-shadow: 0 4px 20px rgba(59,130,246,.35);
+    transition: all .22s; margin-top: 4px;
+  }
+  .modal-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(59,130,246,.45); }
+  .modal-divider {
+    display: flex; align-items: center; gap: 12px;
+    font-size: .78rem; color: var(--ink-muted);
+  }
+  .modal-divider::before, .modal-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--gray-200);
+  }
+  .modal-social-btns { display: flex; gap: 10px; }
+  .modal-social-btn {
+    flex: 1; padding: 10px; border-radius: 10px;
+    border: 1.5px solid var(--gray-200); background: var(--white);
+    font-family: 'Sora',sans-serif; font-size: .82rem; font-weight: 600;
+    color: var(--ink); cursor: pointer; display: flex;
+    align-items: center; justify-content: center; gap: 8px;
+    transition: all .2s;
+  }
+  .modal-social-btn:hover { background: var(--gray-50); border-color: var(--gray-300,#ccc); }
+  .modal-footer-text {
+    text-align: center; font-size: .8rem; color: var(--ink-muted);
+    margin-top: 16px;
+  }
+  .modal-footer-text a { color: var(--sky); font-weight: 600; cursor: pointer; }
+  .modal-footer-text a:hover { text-decoration: underline; }
+  .modal-plan-info {
+    background: var(--aurora-soft);
+    border-radius: 10px; padding: 12px 16px; margin-bottom: 4px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .modal-plan-badge {
+    background: var(--aurora); color: #fff;
+    font-family: 'Sora',sans-serif; font-size: .72rem; font-weight: 700;
+    padding: 3px 10px; border-radius: var(--radius-pill);
+    white-space: nowrap;
+  }
+  .modal-plan-desc { font-size: .82rem; color: var(--violet); font-weight: 500; }
+  .password-wrap { position: relative; }
+  .password-wrap input { padding-right: 44px; }
+  .pw-toggle {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--ink-muted); font-size: .85rem; padding: 4px;
+  }
+  .modal-success {
+    text-align: center; padding: 12px 0 4px;
+    display: none; flex-direction: column; align-items: center; gap: 12px;
+  }
+  .modal-success.show { display: flex; }
+  .success-icon {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: linear-gradient(135deg,#d1fae5,#a7f3d0);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+  }
+  .success-title { font-family: 'Sora',sans-serif; font-weight: 800; font-size: 1.2rem; color: var(--ink); }
+  .success-msg { font-size: .88rem; color: var(--ink-soft); }
+  @media(max-width:480px) {
+    .modal-body { padding: 22px 22px 26px; }
+    .modal-header { padding: 24px 22px 20px; }
+    .mform-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LANGUAGE BANNER -->
+<div class="lang-banner">
+  <div class="lang-banner-inner">
+    <span class="lang-flag">🌍</span>
+    <span class="lang-banner-text">Mentiro AI speaks your language — available in 50+ languages, automatically detected</span>
+    <span class="lang-flag">🌏</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <div class="nav-logo">✦ Mentiro AI</div>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button onclick="openModal('signin')" class="btn btn-outline" style="padding:9px 20px;font-size:.85rem;">Sign In</button>
+      <button onclick="openModal('signup')" class="btn btn-primary" style="padding:9px 20px;font-size:.85rem;">Sign Up Free ✦</button>
+    </div>
+    <div class="nav-hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#home" onclick="toggleMenu()">Home</a>
+  <a href="#features" onclick="toggleMenu()">Features</a>
+  <a href="#how-it-works" onclick="toggleMenu()">How It Works</a>
+  <a href="#pricing" onclick="toggleMenu()">Pricing</a>
+  <a href="#faq" onclick="toggleMenu()">FAQ</a>
+  <a href="#contact" onclick="toggleMenu()">Contact</a>
+  <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
+    <button onclick="toggleMenu();openModal('signin')" class="btn btn-outline" style="flex:1;justify-content:center;">Sign In</button>
+    <button onclick="toggleMenu();openModal('signup')" class="btn btn-primary" style="flex:1;justify-content:center;">Sign Up ✦</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<section id="home">
+  <div class="hero-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-badge">
+          <div class="hero-badge-dot"></div>
+          <span>AI-Powered Study Assistant</span>
+        </div>
+        <h1 class="hero-h1">
+          Learn smarter with<br>
+          <em>Mentiro AI</em> —<br>your multilingual<br>homework assistant.
+        </h1>
+        <p class="hero-p">
+          Get instant help with homework, essays, quizzes, translations, and more — in any language, on any device, at any time.
+        </p>
+        <div class="hero-ctas">
+          <button onclick="openModal('signup')" class="btn btn-primary">Start Free ✦</button>
+          <a href="#pricing" class="btn btn-ghost">See All Plans</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-num">2M+</div>
+            <div class="hero-stat-label">Students Helped</div>
+          </div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">50+</div>
+            <div class="hero-stat-label">Languages</div>
+          </div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">4.9★</div>
+            <div class="hero-stat-label">Rating</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="chat-demo-card">
+          <div class="chat-card-header">
+            <div class="chat-avatar">✦</div>
+            <div>
+              <div class="chat-name">Mentiro AI</div>
+              <div class="chat-status">Online — Ready to help</div>
+            </div>
+          </div>
+          <div class="chat-body">
+            <div class="chat-msg user">How do I solve quadratic equations?</div>
+            <div class="chat-msg ai">
+              <div class="msg-label">✦ Mentiro AI</div>
+              Great question! The quadratic formula is:<br><br>
+              <strong style="color:#a78bfa">x = (−b ± √(b²−4ac)) / 2a</strong><br><br>
+              Where a, b, c are the coefficients of ax²+bx+c=0.<br>
+              Want a step-by-step example? 📚
+              <div class="chat-lang-pills">
+                <span class="lang-pill">🇺🇸 English</span>
+                <span class="lang-pill">🇪🇸 Español</span>
+                <span class="lang-pill">🇫🇷 Français</span>
+                <span class="lang-pill">+47 more</span>
+              </div>
+            </div>
+            <div class="chat-msg user">Yes please! In Spanish 🇪🇸</div>
+            <div class="chat-msg ai">
+              <div class="msg-label">✦ Mentiro AI</div>
+              ¡Claro! Paso 1: Identifica a, b y c...<br>
+              Paso 2: Sustituye en la fórmula...<br>
+              <span style="color:#34d399">✓ Traducción automática activada</span>
+            </div>
+          </div>
+          <div class="chat-input-bar">
+            <div class="chat-input-fake">Ask anything in any language…</div>
+            <button class="chat-send-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-label">Trusted by students from</div>
+  <div style="overflow:hidden">
+    <div class="marquee-track">
+      <span class="marquee-item"><span class="emoji">🇺🇸</span>United States</span>
+      <span class="marquee-item"><span class="emoji">🇧🇷</span>Brazil</span>
+      <span class="marquee-item"><span class="emoji">🇮🇳</span>India</span>
+      <span class="marquee-item"><span class="emoji">🇩🇪</span>Germany</span>
+      <span class="marquee-item"><span class="emoji">🇯🇵</span>Japan</span>
+      <span class="marquee-item"><span class="emoji">🇫🇷</span>France</span>
+      <span class="marquee-item"><span class="emoji">🇳🇬</span>Nigeria</span>
+      <span class="marquee-item"><span class="emoji">🇰🇷</span>South Korea</span>
+      <span class="marquee-item"><span class="emoji">🇸🇦</span>Saudi Arabia</span>
+      <span class="marquee-item"><span class="emoji">🇲🇽</span>Mexico</span>
+      <span class="marquee-item"><span class="emoji">🇨🇳</span>China</span>
+      <span class="marquee-item"><span class="emoji">🇬🇧</span>UK</span>
+      <!-- Duplicate for seamless loop -->
+      <span class="marquee-item"><span class="emoji">🇺🇸</span>United States</span>
+      <span class="marquee-item"><span class="emoji">🇧🇷</span>Brazil</span>
+      <span class="marquee-item"><span class="emoji">🇮🇳</span>India</span>
+      <span class="marquee-item"><span class="emoji">🇩🇪</span>Germany</span>
+      <span class="marquee-item"><span class="emoji">🇯🇵</span>Japan</span>
+      <span class="marquee-item"><span class="emoji">🇫🇷</span>France</span>
+      <span class="marquee-item"><span class="emoji">🇳🇬</span>Nigeria</span>
+      <span class="marquee-item"><span class="emoji">🇰🇷</span>South Korea</span>
+      <span class="marquee-item"><span class="emoji">🇸🇦</span>Saudi Arabia</span>
+      <span class="marquee-item"><span class="emoji">🇲🇽</span>Mexico</span>
+      <span class="marquee-item"><span class="emoji">🇨🇳</span>China</span>
+      <span class="marquee-item"><span class="emoji">🇬🇧</span>UK</span>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features" class="section">
+  <div class="container">
+    <div class="text-center">
+      <div class="tag">✦ Features</div>
+      <h2 class="section-title">Everything you need to <span class="gradient-text">ace your studies</span></h2>
+      <p class="section-sub">Mentiro AI is your all-in-one academic companion — from quick homework help to deep explanations and interactive study tools.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon">📚</div>
+        <div class="feature-h">Homework Help</div>
+        <p class="feature-p">Get step-by-step solutions for any subject — Math, Science, History, Literature, and more. Never get stuck again.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon">🌍</div>
+        <div class="feature-h">Instant Translation</div>
+        <p class="feature-p">Translate text, documents, or entire explanations into 50+ languages instantly. Mentiro detects your language automatically.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon">✍️</div>
+        <div class="feature-h">Essay Writing Assistant</div>
+        <p class="feature-p">Brainstorm ideas, craft outlines, improve your writing, and refine grammar with intelligent AI guidance.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">📝</div>
+        <div class="feature-h">Smart Summaries</div>
+        <p class="feature-p">Paste any text or topic and receive a clear, concise summary — perfect for studying textbooks and long articles.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon">🧩</div>
+        <div class="feature-h">Quiz Generator</div>
+        <p class="feature-p">Turn any topic or notes into custom quizzes to test your knowledge. Track your progress and focus on weak areas.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon">🃏</div>
+        <div class="feature-h">Flashcard Creator</div>
+        <p class="feature-p">Auto-generate flashcard decks from any subject. Review them anywhere, anytime for effortless memorization.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🔍</div>
+        <div class="feature-h">Deep Explanations</div>
+        <p class="feature-p">Go beyond surface answers. Mentiro AI breaks down complex concepts into simple, digestible explanations for real understanding.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-h">Instant Responses</div>
+        <p class="feature-p">No waiting — get answers in seconds. Mentiro AI is optimized for speed so you never lose momentum while studying.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon">📱</div>
+        <div class="feature-h">Works Everywhere</div>
+        <p class="feature-p">Fully responsive on mobile, tablet, and desktop. Study at your desk or on the go — Mentiro is always with you.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" class="section section--alt">
+  <div class="container">
+    <div class="text-center">
+      <div class="tag">✦ How It Works</div>
+      <h2 class="section-title">Up and running in <span class="gradient-text">60 seconds</span></h2>
+      <p class="section-sub">No setup. No complicated steps. Just open Mentiro AI and start learning smarter immediately.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">1</div>
+        <h3 class="step-h">Choose Your Plan</h3>
+        <p class="step-p">Sign up in seconds with the Free plan or unlock more power with Smart or Genius. No credit card required to start.</p>
+      </div>
+      <div class="step reveal reveal-delay-1">
+        <div class="step-num">2</div>
+        <h3 class="step-h">Type Your Question</h3>
+        <p class="step-p">Ask anything — in any language. Homework questions, essay topics, translation requests, or "explain this concept."</p>
+      </div>
+      <div class="step reveal reveal-delay-2">
+        <div class="step-num">3</div>
+        <h3 class="step-h">Get Smart Answers</h3>
+        <p class="step-p">Mentiro AI instantly replies in your language with accurate, detailed explanations, summaries, quizzes, or flashcards.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHAT DEMO -->
+<section id="chat-demo">
+  <div class="container">
+    <div class="chat-demo-layout">
+      <div class="demo-copy reveal">
+        <div class="tag" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.8)">✦ Live Demo</div>
+        <h2 class="section-title" style="color:#fff">Try Mentiro AI <span style="background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">right now</span></h2>
+        <p class="section-sub" style="color:rgba(255,255,255,.6);margin:0 0 32px">Experience the power of your multilingual AI study assistant. Ask anything, in any language.</p>
+        <div class="demo-features-list">
+          <div class="demo-feature"><div class="demo-feature-dot"></div>Ask in any language — auto-detected</div>
+          <div class="demo-feature"><div class="demo-feature-dot"></div>Get step-by-step solutions instantly</div>
+          <div class="demo-feature"><div class="demo-feature-dot"></div>Generate quizzes & flashcards on demand</div>
+          <div class="demo-feature"><div class="demo-feature-dot"></div>Covers Math, Science, Languages, History & more</div>
+          <div class="demo-feature"><div class="demo-feature-dot"></div>Always accurate. Always kind. Always fast.</div>
+        </div>
+      </div>
+      <div class="demo-chat-widget reveal reveal-delay-1">
+        <div class="demo-chat-header">
+          <div class="demo-chat-avatar">✦</div>
+          <div class="demo-chat-info">
+            <div class="name">Mentiro AI</div>
+            <div class="status">● Online — Multilingual mode active</div>
+          </div>
+        </div>
+        <div class="demo-chat-body" id="chatBody">
+          <div class="demo-msg ai">
+            <div class="demo-msg-bubble">
+              👋 Hi! I'm Mentiro AI. Ask me anything — homework, essays, translations, quizzes, or study help. I reply in your language!
+            </div>
+          </div>
+        </div>
+        <div style="padding:0 20px 10px">
+          <div class="demo-subject-tags">
+            <span class="subject-tag" onclick="quickAsk('Help me with a math problem')">📐 Math</span>
+            <span class="subject-tag" onclick="quickAsk('Explain photosynthesis simply')">🔬 Science</span>
+            <span class="subject-tag" onclick="quickAsk('Help me write an essay intro')">✍️ Essay</span>
+            <span class="subject-tag" onclick="quickAsk('Translate: Bonjour, comment ça va?')">🌍 Translate</span>
+            <span class="subject-tag" onclick="quickAsk('Make me a quiz on World War II')">🧩 Quiz</span>
+          </div>
+        </div>
+        <div class="demo-input-row">
+          <input class="demo-input" id="demoInput" type="text" placeholder="Ask anything in any language…" onkeypress="handleKey(event)">
+          <button class="demo-send" onclick="sendMessage()">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="section">
+  <div class="container">
+    <div class="text-center">
+      <div class="tag">✦ Pricing</div>
+      <h2 class="section-title">Simple, student-friendly <span class="gradient-text">pricing</span></h2>
+      <p class="section-sub">Start free, upgrade when you need more power. No hidden fees. Cancel anytime.</p>
+
+      <!-- BILLING TOGGLE -->
+      <div class="billing-toggle">
+        <span class="billing-label" id="label-monthly" style="color:var(--ink)">Monthly</span>
+        <div class="toggle-track" onclick="toggleBilling()" id="billingToggle">
+          <div class="toggle-thumb" id="toggleThumb"></div>
+        </div>
+        <span class="billing-label" id="label-yearly">Yearly</span>
+        <div class="savings-pill" id="savingsPill">Save up to 17%</div>
+      </div>
+    </div>
+
+    <div class="pricing-grid">
+
+      <!-- FREE -->
+      <div class="plan-card reveal">
+        <div class="plan-name">Free Plan</div>
+        <div class="plan-price"><sup>$</sup>0<sub>/mo</sub></div>
+        <p class="plan-desc">Perfect for getting started. All the basics you need to get unstuck — always free.</p>
+        <div class="plan-limit-bar">
+          <div class="plan-limit-label">📬 20 messages / day limit</div>
+        </div>
+        <hr class="plan-divider">
+        <div class="plan-features">
+          <div class="plan-feat"><div class="plan-feat-icon yes">✓</div>Basic homework help</div>
+          <div class="plan-feat"><div class="plan-feat-icon limited">~</div>20 messages per day</div>
+          <div class="plan-feat"><div class="plan-feat-icon yes">✓</div>Simple translation (10 languages)</div>
+          <div class="plan-feat"><div class="plan-feat-icon yes">✓</div>Short summaries</div>
+          <div class="plan-feat"><div class="plan-feat-icon limited">~</div>Standard response speed</div>
+        </div>
+        <button onclick="openModal('signup')" class="btn btn-plan-free" style="width:100%;justify-content:center;border-radius:12px;">Start Free</button>
+      </div>
+
+      <!-- SMART -->
+      <div class="plan-card reveal reveal-delay-1">
+        <div class="plan-badge">Popular</div>
+        <div class="plan-name">Smart Plan</div>
+        <div class="plan-price" id="smart-price"><sup>$</sup>4<span class="price-cents">.99</span><sub>/mo</sub></div>
+        <div class="plan-yearly-note" id="smart-yearly" style="display:none">
+          <span class="yearly-total">$58.99 billed yearly</span>
+          <span class="yearly-save">Save $0.89/mo</span>
+        </div>
+        <p class="plan-desc">More power for serious students who want better results and more tools.</p>
+        <hr class="plan-divider">
+        <div class="plan-features">
+          <div class="plan-feat"><div class="plan-feat-icon yes">✓</div>Advanced homework help</div>
+          <div class="plan-feat"><div class="plan-feat-icon yes">✓</div>200 messages per day</div>
+          <div class="plan-feat"><div class="plan-feat-icon yes">✓</div>Full translation (30+ languages)</div>
+          <div class="plan-feat"><div class="plan-feat-icon yes">✓</div>Quiz & flashcard generator</div>
+          <div class="plan-feat"><div class="plan-feat-icon yes">✓</div>Essay writing assistant</div>
+          <div class="plan-feat"><div class="plan-feat-icon yes">✓</div>Faster response speed</div>
+        </div>
+        <button onclick="openModal('signup','smart')" class="btn btn-plan-smart" style="width:100%;justify-content:center;border-radius:12px;">Upgrade to Smart ✦</button>
+      </div>
+
+      <!-- GENIUS -->
+      <div class="plan-card featured reveal reveal-delay-2">
+        <div class="plan-badge" style="background:linear-gradient(135deg,#7c3aed,#4f46e5)">Best Value</div>
+        <div class="plan-name">Genius Plan</div>
+        <div class="plan-price" id="genius-price" style="color:#fff"><sup>$</sup>9<span class="price-cents">.99</span><sub style="color:rgba(255,255,255,.5)">/mo</sub></div>
+        <div class="plan-yearly-note" id="genius-yearly" style="display:none;color:rgba(255,255,255,.7)">
+          <span class="yearly-total">$118.99 billed yearly</span>
+          <span class="yearly-save">Save $1.90/mo</span>
+        </div>
+        <p class="plan-desc">The ultimate AI study companion. No limits, maximum intelligence.</p>
+        <hr class="plan-divider">
+        <div class="plan-features">
+          <div class="plan-feat"><div class="plan-feat-icon yes">✓</div>Everything in Smart Plan</div>
+          <div class="plan-feat"><div class="plan-feat-icon yes">✓</div>Unlimited messages</div>
+          <div class="plan-feat"><div class="plan-feat-icon yes">✓</div>50+ language support</div>
+          <div class="plan-feat"><div class="plan-feat-icon yes">✓</div>Deep explanations & analysis</div>
+          <div class="plan-feat"><div class="plan-feat-icon yes">✓</div>Priority speed (fastest)</div>
+          <div class="plan-feat"><div class="plan-feat-icon yes">✓</div>Advanced essay feedback</div>
+          <div class="plan-feat"><div class="plan-feat-icon yes">✓</div>Custom study plans</div>
+        </div>
+        <button onclick="openModal('signup','genius')" class="btn btn-plan-genius" style="width:100%;justify-content:center;border-radius:12px;">Go Genius ✦</button>
+      </div>
+
+    </div>
+    <p style="text-align:center;font-size:.82rem;color:var(--ink-muted);margin-top:24px">All plans include a 7-day free trial. No credit card required for Free plan.</p>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section section--alt">
+  <div class="container">
+    <div class="text-center">
+      <div class="tag">✦ Student Reviews</div>
+      <h2 class="section-title">Students <span class="gradient-text">love Mentiro</span></h2>
+      <p class="section-sub">Real stories from students around the world who improved their grades and confidence with Mentiro AI.</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Mentiro AI helped me understand calculus in a way my textbook never could. The step-by-step explanations are incredible and it replies in Portuguese!"</p>
+        <div class="testi-author">
+          <div class="testi-avatar">🇧🇷</div>
+          <div>
+            <div class="testi-name">Mariana S.</div>
+            <div class="testi-role">University Student, Brazil</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal reveal-delay-1">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"My English isn't perfect but Mentiro understands everything I ask. It's like having a tutor available 24/7. My grades went from C to A in one semester."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">🇯🇵</div>
+          <div>
+            <div class="testi-name">Kenji T.</div>
+            <div class="testi-role">High School Student, Japan</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal reveal-delay-2">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"The quiz generator is amazing! I study for exams by creating custom quizzes on any topic. It's made revision so much more effective and even fun."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">🇳🇬</div>
+          <div>
+            <div class="testi-name">Amara O.</div>
+            <div class="testi-role">College Student, Nigeria</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"As a non-native English speaker studying abroad, Mentiro has been a lifesaver. It translates, explains, and helps me write essays that actually sound good."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">🇩🇪</div>
+          <div>
+            <div class="testi-name">Lena M.</div>
+            <div class="testi-role">Exchange Student, Germany</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal reveal-delay-1">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"The flashcard feature is pure genius. I made 200 flashcards for my biology exam in minutes. Mentiro AI is the study tool I've always wanted."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">🇮🇳</div>
+          <div>
+            <div class="testi-name">Priya K.</div>
+            <div class="testi-role">Medical Student, India</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal reveal-delay-2">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Worth every penny of the Genius plan. The deep explanations and unlimited messages mean I never hit a wall when studying. Truly the best AI for students."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">🇺🇸</div>
+          <div>
+            <div class="testi-name">Tyler R.</div>
+            <div class="testi-role">High School Senior, USA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="section">
+  <div class="container">
+    <div class="text-center">
+      <div class="tag">✦ FAQ</div>
+      <h2 class="section-title">Questions? <span class="gradient-text">We've got answers</span></h2>
+      <p class="section-sub">Everything you need to know about Mentiro AI.</p>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What languages does Mentiro AI support?
+          <span class="chevron">▼</span>
+        </button>
+        <div class="faq-a">Mentiro AI supports 50+ languages including English, Spanish, French, German, Arabic, Hindi, Portuguese, Japanese, Korean, Chinese, and many more. It automatically detects your language and responds in kind — no settings needed.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Is Mentiro AI safe for students?
+          <span class="chevron">▼</span>
+        </button>
+        <div class="faq-a">Absolutely. Mentiro AI is designed with student safety in mind. It provides learning guidance and explanations rather than just answers, helping students understand concepts. Our platform is ad-free and privacy-focused.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Can I cancel my subscription anytime?
+          <span class="chevron">▼</span>
+        </button>
+        <div class="faq-a">Yes! There are no contracts or commitments. You can cancel your Smart or Genius subscription at any time and you'll continue to have access until the end of your billing period.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How accurate is the homework help?
+          <span class="chevron">▼</span>
+        </button>
+        <div class="faq-a">Mentiro AI is powered by state-of-the-art language models with high accuracy across subjects. For Genius plan users, you get enhanced accuracy with deep reasoning capabilities. We always recommend using Mentiro as a learning tool alongside your own study.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What subjects does Mentiro cover?
+          <span class="chevron">▼</span>
+        </button>
+        <div class="faq-a">Mentiro covers a wide range of subjects including Mathematics (from basic arithmetic to calculus), Sciences (Biology, Chemistry, Physics), Languages and Literature, History, Geography, Computer Science, and much more.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Is there a mobile app?
+          <span class="chevron">▼</span>
+        </button>
+        <div class="faq-a">Mentiro AI is fully responsive and works beautifully on any mobile browser — no download needed. We're also working on dedicated iOS and Android apps coming soon!</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Do you offer student discounts?
+          <span class="chevron">▼</span>
+        </button>
+        <div class="faq-a">Yes! We offer special discounts for verified students and educational institutions. Contact us at students@mentiro.ai with your school email for exclusive pricing.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="section section--alt">
+  <div class="container">
+    <div class="contact-layout">
+      <div class="contact-copy reveal">
+        <div class="tag">✦ Contact</div>
+        <h2 class="section-title">We'd love to <span class="gradient-text">hear from you</span></h2>
+        <p class="section-sub">Have a question, feedback, or need help? Our team is here for you. We respond within 24 hours.</p>
+        <div class="contact-methods">
+          <div class="contact-method">
+            <div class="contact-method-icon">📧</div>
+            <div>
+              <div class="contact-method-title">Email Us</div>
+              <div class="contact-method-val">hello@mentiro.ai</div>
+            </div>
+          </div>
+          <div class="contact-method">
+            <div class="contact-method-icon">🎓</div>
+            <div>
+              <div class="contact-method-title">Student Discounts</div>
+              <div class="contact-method-val">students@mentiro.ai</div>
+            </div>
+          </div>
+          <div class="contact-method">
+            <div class="contact-method-icon">🏫</div>
+            <div>
+              <div class="contact-method-title">Schools & Universities</div>
+              <div class="contact-method-val">education@mentiro.ai</div>
+            </div>
+          </div>
+          <div class="contact-method">
+            <div class="contact-method-icon">💬</div>
+            <div>
+              <div class="contact-method-title">Live Chat</div>
+              <div class="contact-method-val">Available in-app, 9am–9pm UTC</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form reveal reveal-delay-1">
+        <h3 style="font-family:'Sora',sans-serif;font-weight:700;font-size:1.15rem;margin-bottom:22px">Send us a message</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" placeholder="Alex">
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" placeholder="Johnson">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="alex@email.com">
+        </div>
+        <div class="form-group">
+          <label>Subject</label>
+          <select>
+            <option>General Inquiry</option>
+            <option>Billing & Plans</option>
+            <option>Technical Support</option>
+            <option>Student Discount</option>
+            <option>Schools & Universities</option>
+            <option>Feedback</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea placeholder="Tell us how we can help…"></textarea>
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;border-radius:12px;padding:14px;">Send Message ✦</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section style="background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%);padding:80px 0;">
+  <div class="container text-center">
+    <div class="tag" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.8)">✦ Get Started Today</div>
+    <h2 style="font-family:'Sora',sans-serif;font-size:clamp(2rem,4vw,2.8rem);font-weight:800;color:#fff;margin-bottom:16px">
+      Ready to learn <span style="background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">smarter?</span>
+    </h2>
+    <p style="font-size:1.05rem;color:rgba(255,255,255,.6);max-width:480px;margin:0 auto 36px">
+      Join 2 million students worldwide who trust Mentiro AI to help them study, learn, and succeed.
+    </p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      <button onclick="openModal('signup')" class="btn btn-white">Start Free — No Card Needed</button>
+      <a href="#pricing" class="btn btn-ghost">Go Genius ✦</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">✦ Mentiro AI</div>
+        <p class="footer-tagline">Your multilingual AI study assistant. Helping students around the world learn smarter, faster, and with more confidence.</p>
+        <div class="footer-social">
+          <a href="#" class="social-btn">𝕏</a>
+          <a href="#" class="social-btn">in</a>
+          <a href="#" class="social-btn">ig</a>
+          <a href="#" class="social-btn">yt</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Product</div>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#chat-demo">Try Demo</a></li>
+          <li><a href="#">Mobile App</a></li>
+          <li><a href="#">For Schools</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Subjects</div>
+        <ul>
+          <li><a href="#">Mathematics</a></li>
+          <li><a href="#">Sciences</a></li>
+          <li><a href="#">Languages</a></li>
+          <li><a href="#">History</a></li>
+          <li><a href="#">Computer Science</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Company</div>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Use</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 Mentiro AI. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── MOBILE MENU ──
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+// ── SCROLL REVEAL ──
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.12 });
+revealEls.forEach(el => observer.observe(el));
+
+// ── FAQ TOGGLE ──
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const allItems = document.querySelectorAll('.faq-item');
+  allItems.forEach(i => { if (i !== item) i.classList.remove('open'); });
+  item.classList.toggle('open');
+}
+
+// ── CHAT DEMO ──
+const responses = {
+  'Help me with a math problem': '📐 Of course! What math problem are you working on? Share it and I\'ll solve it step-by-step — from algebra to calculus, I\'ve got you!',
+  'Explain photosynthesis simply': '🌱 Photosynthesis is how plants make food using sunlight!\n\nSimple formula:\n☀️ Sunlight + 💧 Water + 🌬️ CO₂ → 🍬 Glucose + 💨 Oxygen\n\nPlants capture light with chlorophyll in their leaves and convert it to energy. Want a deeper explanation or a quiz on this?',
+  'Help me write an essay intro': '✍️ Great! Tell me your essay topic and I\'ll help you write a strong introduction with a hook, background context, and thesis statement.',
+  'Translate: Bonjour, comment ça va?': '🌍 Translation:\n\n🇫🇷 French: "Bonjour, comment ça va?"\n🇬🇧 English: "Hello, how are you?"\n\nDetected: French 🇫🇷\nWant me to translate into another language?',
+  'Make me a quiz on World War II': '🧩 Here\'s a quick quiz on World War II!\n\nQ1: In which year did WWII begin?\nA) 1935  B) 1939  C) 1941  D) 1943\n\nQ2: Which country was NOT part of the Allied Powers?\nA) USA  B) UK  C) Germany  D) Soviet Union\n\nShall I generate more questions?'
+};
+
+function quickAsk(q) {
+  document.getElementById('demoInput').value = q;
+  sendMessage();
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter') sendMessage();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('demoInput');
+  const body = document.getElementById('chatBody');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+
+  // User bubble
+  const userDiv = document.createElement('div');
+  userDiv.className = 'demo-msg user';
+  userDiv.innerHTML = `<div class="demo-msg-bubble">${escapeHtml(text)}</div>`;
+  body.appendChild(userDiv);
+
+  // Typing indicator
+  const typing = document.createElement('div');
+  typing.className = 'demo-typing';
+  typing.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+  body.appendChild(typing);
+  body.scrollTop = body.scrollHeight;
+
+  await sleep(1200);
+  body.removeChild(typing);
+
+  const reply = responses[text] || await getAIReply(text);
+
+  const aiDiv = document.createElement('div');
+  aiDiv.className = 'demo-msg ai';
+  aiDiv.innerHTML = `<div class="demo-msg-bubble">${escapeHtml(reply)}</div>`;
+  body.appendChild(aiDiv);
+  body.scrollTop = body.scrollHeight;
+}
+
+async function getAIReply(userText) {
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: 'You are Mentiro AI, a friendly multilingual homework and study assistant for students. Keep answers helpful, clear, and concise. Use emojis sparingly. Detect the user\'s language and reply in the same language. Max 120 words.',
+        messages: [{ role: 'user', content: userText }]
+      })
+    });
+    const data = await res.json();
+    return data.content?.[0]?.text || fallbackReply(userText);
+  } catch {
+    return fallbackReply(userText);
+  }
+}
+
+function fallbackReply(text) {
+  const replies = [
+    '✦ Great question! I\'d love to help you with that. As Mentiro AI, I can assist with explanations, translations, quizzes, flashcards, and more. Try asking something specific!',
+    '📚 I\'m here to help you learn! Ask me about any subject, in any language. What would you like to understand better?',
+    '🌟 That\'s an interesting topic! I can break it down step by step, create a quiz, or make flashcards for you. What format works best?'
+  ];
+  return replies[Math.floor(Math.random() * replies.length)];
+}
+
+function escapeHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ── BILLING TOGGLE ──
+let isYearly = false;
+function toggleBilling() {
+  isYearly = !isYearly;
+  const track = document.getElementById('billingToggle');
+  const lm = document.getElementById('label-monthly');
+  const ly = document.getElementById('label-yearly');
+  track.classList.toggle('on', isYearly);
+  lm.style.color = isYearly ? 'var(--ink-muted)' : 'var(--ink)';
+  ly.style.color = isYearly ? 'var(--ink)' : 'var(--ink-muted)';
+
+  // Smart Plan
+  const sp = document.getElementById('smart-price');
+  const sy = document.getElementById('smart-yearly');
+  if (isYearly) {
+    sp.innerHTML = '<sup>$</sup>4<span class="price-cents">.92</span><sub>/mo</sub>';
+    sy.style.display = 'flex';
+  } else {
+    sp.innerHTML = '<sup>$</sup>4<span class="price-cents">.99</span><sub>/mo</sub>';
+    sy.style.display = 'none';
+  }
+
+  // Genius Plan
+  const gp = document.getElementById('genius-price');
+  const gy = document.getElementById('genius-yearly');
+  if (isYearly) {
+    gp.innerHTML = '<sup>$</sup>9<span class="price-cents">.92</span><sub style="color:rgba(255,255,255,.5)">/mo</sub>';
+    gy.style.display = 'flex';
+  } else {
+    gp.innerHTML = '<sup>$</sup>9<span class="price-cents">.99</span><sub style="color:rgba(255,255,255,.5)">/mo</sub>';
+    gy.style.display = 'none';
+  }
+}
+
+// ── AUTH MODAL ──
+let currentTab = 'signin';
+function openModal(tab, plan) {
+  const modal = document.getElementById('authModal');
+  document.getElementById('modalSuccess').classList.remove('show');
+  document.getElementById('formSignin').style.display = '';
+  document.getElementById('formSignup').style.display = 'none';
+  switchTab(tab || 'signin');
+  if (plan) {
+    const planInfo = document.getElementById('modalPlanInfo');
+    planInfo.style.display = 'flex';
+    const badge = document.getElementById('modalPlanBadge');
+    badge.textContent = plan === 'genius' ? '✦ Genius Plan' : '✦ Smart Plan';
+    // ensure signup tab is shown
+    switchTab('signup');
+  } else {
+    document.getElementById('modalPlanInfo').style.display = 'none';
+  }
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('authModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('authModal')) closeModal();
+}
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('tab-signin').classList.toggle('active', tab==='signin');
+  document.getElementById('tab-signup').classList.toggle('active', tab==='signup');
+  document.getElementById('formSignin').style.display = tab==='signin' ? '' : 'none';
+  document.getElementById('formSignup').style.display = tab==='signup' ? '' : 'none';
+  document.getElementById('modalTitle').textContent = tab==='signin' ? 'Welcome back' : 'Create your account';
+  document.getElementById('modalSub').textContent = tab==='signin'
+    ? 'Sign in to continue learning smarter'
+    : 'Join 2 million students — it\'s free to start';
+}
+function handleSignin(e) {
+  e.preventDefault();
+  showSuccess('You\'re signed in! 🎉', 'Welcome back to Mentiro AI. Ready to learn?');
+}
+function handleSignup(e) {
+  e.preventDefault();
+  showSuccess('Account created! 🎉', 'Welcome to Mentiro AI. Your free account is ready.');
+}
+function showSuccess(title, msg) {
+  document.getElementById('formSignin').style.display = 'none';
+  document.getElementById('formSignup').style.display = 'none';
+  document.getElementById('modalPlanInfo').style.display = 'none';
+  document.getElementById('successTitle').textContent = title;
+  document.getElementById('successMsg').textContent = msg;
+  document.getElementById('modalSuccess').classList.add('show');
+}
+function togglePw(id, btn) {
+  const input = document.getElementById(id);
+  if (input.type === 'password') { input.type = 'text'; btn.textContent = '🙈'; }
+  else { input.type = 'password'; btn.textContent = '👁'; }
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ── NAVBAR SCROLL EFFECT ──
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('navbar');
+  if (window.scrollY > 20) {
+    nav.style.boxShadow = '0 4px 24px rgba(0,0,0,.08)';
+  } else {
+    nav.style.boxShadow = 'none';
+  }
+});
+</script>
+<!-- ── AUTH MODAL ── -->
+<div class="modal-overlay" id="authModal" onclick="handleOverlayClick(event)">
+  <div class="modal-box" id="modalBox">
+
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-logo">✦ Mentiro AI</div>
+      <div class="modal-title" id="modalTitle">Welcome back</div>
+      <div class="modal-sub" id="modalSub">Sign in to continue learning smarter</div>
+    </div>
+
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
+      <button class="modal-tab" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- PLAN INFO (shown when coming from plan button) -->
+      <div class="modal-plan-info" id="modalPlanInfo" style="display:none">
+        <div class="modal-plan-badge" id="modalPlanBadge">Smart Plan</div>
+        <div class="modal-plan-desc">Create an account to get started with your plan</div>
+      </div>
+
+      <!-- SUCCESS STATE -->
+      <div class="modal-success" id="modalSuccess">
+        <div class="success-icon">🎉</div>
+        <div class="success-title" id="successTitle">You're all set!</div>
+        <div class="success-msg" id="successMsg">Welcome to Mentiro AI. Start learning smarter today.</div>
+        <button class="modal-submit" onclick="closeModal()" style="margin-top:8px;max-width:200px">Go to Dashboard →</button>
+      </div>
+
+      <!-- SIGN IN FORM -->
+      <form class="modal-form" id="formSignin" onsubmit="handleSignin(event)">
+        <div class="modal-social-btns">
+          <button type="button" class="modal-social-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Google
+          </button>
+          <button type="button" class="modal-social-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            Facebook
+          </button>
+        </div>
+        <div class="modal-divider">or sign in with email</div>
+        <div class="mform-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="you@email.com" required>
+        </div>
+        <div class="mform-group">
+          <label>Password</label>
+          <div class="password-wrap">
+            <input type="password" id="signinPw" placeholder="Your password" required>
+            <button type="button" class="pw-toggle" onclick="togglePw('signinPw',this)">👁</button>
+          </div>
+        </div>
+        <div style="text-align:right;margin-top:-8px">
+          <a href="#" style="font-size:.8rem;color:var(--sky);font-weight:600">Forgot password?</a>
+        </div>
+        <button type="submit" class="modal-submit">Sign In to Mentiro ✦</button>
+        <div class="modal-footer-text">
+          Don't have an account? <a onclick="switchTab('signup')">Sign up free</a>
+        </div>
+      </form>
+
+      <!-- SIGN UP FORM -->
+      <form class="modal-form" id="formSignup" onsubmit="handleSignup(event)" style="display:none">
+        <div class="modal-social-btns">
+          <button type="button" class="modal-social-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Google
+          </button>
+          <button type="button" class="modal-social-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            Facebook
+          </button>
+        </div>
+        <div class="modal-divider">or sign up with email</div>
+        <div class="mform-row">
+          <div class="mform-group">
+            <label>First Name</label>
+            <input type="text" placeholder="Alex" required>
+          </div>
+          <div class="mform-group">
+            <label>Last Name</label>
+            <input type="text" placeholder="Johnson" required>
+          </div>
+        </div>
+        <div class="mform-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="you@email.com" required>
+        </div>
+        <div class="mform-group">
+          <label>Password</label>
+          <div class="password-wrap">
+            <input type="password" id="signupPw" placeholder="Create a strong password" required>
+            <button type="button" class="pw-toggle" onclick="togglePw('signupPw',this)">👁</button>
+          </div>
+        </div>
+        <div class="mform-group">
+          <label>I am a…</label>
+          <select style="padding:11px 16px;border:1.5px solid var(--gray-200);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);background:var(--gray-50);outline:none">
+            <option>High School Student</option>
+            <option>University / College Student</option>
+            <option>Middle School Student</option>
+            <option>Teacher / Educator</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;font-size:.8rem;color:var(--ink-soft)">
+          <input type="checkbox" id="termsCheck" style="width:auto;margin-top:2px" required>
+          <label for="termsCheck">I agree to the <a href="#" style="color:var(--sky)">Terms of Service</a> and <a href="#" style="color:var(--sky)">Privacy Policy</a></label>
+        </div>
+        <button type="submit" class="modal-submit">Create Free Account ✦</button>
+        <div class="modal-footer-text">
+          Already have an account? <a onclick="switchTab('signin')">Sign in</a>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
